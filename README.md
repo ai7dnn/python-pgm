@@ -17,7 +17,6 @@
 - [ChatGPT 학습](https://chatgpt.com/share/e/6827f3bb-8c10-8008-bc6c-6758dc34589c)
   
 ## 온라인 출석과 수업 참여
-- [A반 화요일 오전](https://docs.google.com/spreadsheets/d/1v2OZR6dVRBUfdpB6SjbnsLTAucvXlPvy_t35Fzs6ZPY/edit?usp=sharing)
 - [B반 화요일 오후](https://docs.google.com/spreadsheets/d/1YhcTH-omOROUrfThsX2j0i2QvOT4XYPXFRhCO3QC-s8/edit?usp=sharing)
 
 ## 쉘에서 줄 또는 선택블록 실행: shift + enter 설정 방법
