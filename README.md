@@ -7,7 +7,7 @@
   - 수업에 반드시 준비해 주시기 바랍니다. 
 
 ## 온라인 출석과 수업 참여
-- [B반 월요일 오후]()
+- [B반 월요일 오후](https://docs.google.com/spreadsheets/d/1iZA1tKuyc9g_6Vm44AOtUDjoTybNoOAJGwXSTugZHAw/edit?usp=sharing)
 
 ## 중간시험
 - 일정: 2026/4/27(월) 오후 2:00 ~ 3:00
