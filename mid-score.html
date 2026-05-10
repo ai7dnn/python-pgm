@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이썬프로그래밍 — 중간고사 성적 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0e1a;
+    --paper:#f4f1ea;
+    --paper-2:#ebe6d9;
+    --rule:#1a1f2e;
+    --accent:#c8431f;
+    --accent-2:#1d3557;
+    --gold:#a88c4a;
+    --muted:#5a5547;
+    --grid:#d6cfbe;
+    --good:#2d5a3d;
+    --mid:#a88c4a;
+    --low:#a23a2a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Pretendard',sans-serif;-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(ellipse at 10% 0%, rgba(200,67,31,.06), transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(29,53,87,.06), transparent 50%),
+      var(--paper);
+    min-height:100vh;
+    padding:48px 32px 80px;
+  }
+  .wrap{max-width:1280px;margin:0 auto}
+
+  /* Masthead */
+  .masthead{
+    border-top:3px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    padding:18px 0 14px;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:8px;
+  }
+  .masthead .left{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .masthead .right{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--muted)}
+
+  .title-block{padding:32px 0 28px;border-bottom:1px solid var(--ink);margin-bottom:32px;position:relative}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3em;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
+  .course-tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    background:var(--ink);color:var(--paper);padding:5px 10px;margin-bottom:18px;text-transform:uppercase;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:900;
+    font-size:clamp(40px,6vw,76px);
+    line-height:.95;
+    letter-spacing:-.02em;
+    color:var(--ink);
+  }
+  h1 .it{font-style:italic;font-weight:400;color:var(--accent)}
+  .course-name{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:22px;color:var(--accent-2);margin-top:14px;letter-spacing:-.01em;
+  }
+  .subtitle{
+    margin-top:18px;font-size:15px;color:var(--muted);max-width:720px;line-height:1.6;
+    font-family:'Pretendard',sans-serif;
+  }
+
+  /* KPI strip */
+  .kpis{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
+    margin-bottom:48px;
+  }
+  .kpi{
+    padding:22px 20px;border-right:1px solid var(--grid);
+    display:flex;flex-direction:column;justify-content:space-between;min-height:120px;
+  }
+  .kpi:last-child{border-right:none}
+  .kpi .label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .kpi .value{font-family:'Fraunces',serif;font-weight:800;font-size:42px;line-height:1;letter-spacing:-.03em}
+  .kpi .unit{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-left:4px;font-weight:400}
+  .kpi .sub{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+  /* Section header */
+  .sec-head{
+    display:flex;align-items:baseline;gap:16px;margin:48px 0 20px;
+    padding-bottom:10px;border-bottom:1px solid var(--ink);
+  }
+  .sec-head .num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.2em}
+  .sec-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:28px;letter-spacing:-.01em}
+  .sec-head .meta{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase}
+
+  /* Histogram */
+  .chart-card{
+    background:#fbf8f0;
+    border:1px solid var(--ink);
+    padding:32px 28px 24px;
+    margin-bottom:8px;
+  }
+  .chart-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:4px}
+  .chart-sub{font-size:12px;color:var(--muted);margin-bottom:24px;font-family:'JetBrains Mono',monospace;letter-spacing:.05em}
+  .hist{position:relative;height:340px;display:flex;align-items:flex-end;gap:6px;padding:0 0 38px 44px;border-left:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .bar{
+    flex:1;position:relative;
+    background:var(--accent-2);
+    transition:transform .3s ease;
+    cursor:pointer;
+    min-height:2px;
+  }
+  .bar:hover{transform:translateY(-3px)}
+  .bar.b1{background:#a23a2a}
+  .bar.b2{background:#c66b3a}
+  .bar.b3{background:#d4a04a}
+  .bar.b4{background:#5a8a5a}
+  .bar.b5{background:#1d3557}
+  .bar.b6{background:#0a0e1a}
+  .bar .count{
+    position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+    font-family:'Fraunces',serif;font-weight:700;font-size:16px;color:var(--ink);
+  }
+  .bar .lbl{
+    position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;
+  }
+  .y-axis{position:absolute;left:0;top:0;bottom:38px;width:44px;display:flex;flex-direction:column;justify-content:space-between;padding-right:8px}
+  .y-tick{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-align:right}
+
+  /* Two column */
+  .two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:32px;margin-top:32px}
+
+  /* Box plot / distribution */
+  .box-card{background:#fbf8f0;border:1px solid var(--ink);padding:32px 28px}
+  .boxplot{position:relative;height:120px;margin:32px 0 24px}
+  .axis{position:absolute;left:0;right:0;top:60px;height:1px;background:var(--ink)}
+  .tick{position:absolute;top:54px;width:1px;height:13px;background:var(--ink)}
+  .tick .tlbl{position:absolute;top:18px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap}
+  .box{position:absolute;top:38px;height:44px;background:rgba(29,53,87,.15);border:1.5px solid var(--accent-2)}
+  .median{position:absolute;top:38px;width:2px;height:44px;background:var(--accent)}
+  .whisker{position:absolute;top:60px;height:1px;background:var(--ink)}
+  .cap{position:absolute;top:50px;width:1px;height:21px;background:var(--ink)}
+  .dot{position:absolute;top:56px;width:9px;height:9px;border-radius:50%;background:var(--ink);transform:translate(-50%,0);border:1.5px solid var(--paper)}
+  .dot.outlier{background:var(--accent);width:11px;height:11px;top:55px}
+
+  /* Quartile cards */
+  .quartiles{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--grid)}
+  .q{padding:16px 12px;border-right:1px solid var(--grid)}
+  .q:last-child{border-right:none}
+  .q .qlabel{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+  .q .qval{font-family:'Fraunces',serif;font-weight:700;font-size:24px;letter-spacing:-.02em}
+
+  /* Legend / grade band */
+  .grade-band{background:#fbf8f0;border:1px solid var(--ink);padding:32px 28px}
+  .band-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px dashed var(--grid);gap:14px}
+  .band-row:last-child{border-bottom:none}
+  .swatch{width:28px;height:28px;border:1px solid var(--ink);flex-shrink:0}
+  .band-info{flex:1}
+  .band-info .bname{font-family:'Fraunces',serif;font-weight:700;font-size:15px}
+  .band-info .brange{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+  .band-count{font-family:'Fraunces',serif;font-weight:800;font-size:28px;letter-spacing:-.02em}
+  .band-pct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-align:right}
+
+  /* Strip plot — every student */
+  .strip-card{background:#fbf8f0;border:1px solid var(--ink);padding:32px 28px;margin-top:32px}
+  .strip{position:relative;height:110px;margin:24px 0 8px}
+  .strip-axis{position:absolute;left:0;right:0;top:70px;height:1px;background:var(--ink)}
+  .strip-tick{position:absolute;top:66px;width:1px;height:9px;background:var(--ink)}
+  .strip-tick .stl{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+  .student{position:absolute;width:14px;height:14px;border-radius:50%;border:1.5px solid #fbf8f0;cursor:pointer;transition:transform .15s}
+  .student:hover{transform:scale(1.5);z-index:10}
+  .tooltip{
+    position:absolute;background:var(--ink);color:var(--paper);padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;
+    pointer-events:none;opacity:0;transform:translate(-50%,-110%);transition:opacity .15s;white-space:nowrap;z-index:100;
+  }
+  .tooltip.show{opacity:1}
+  .tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ink)}
+
+  /* Footer note */
+  .footer-note{
+    margin-top:48px;padding-top:20px;border-top:1px solid var(--ink);
+    display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
+  }
+
+  @media (max-width:880px){
+    body{padding:24px 16px 60px}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .kpi{border-bottom:1px solid var(--grid)}
+    .two-col{grid-template-columns:1fr}
+    .quartiles{grid-template-columns:repeat(2,1fr)}
+    .quartiles .q:nth-child(2){border-right:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="left">인공지능소프트웨어학과 · DEPT. OF AI SOFTWARE</div>
+    <div class="right">PYTHON PROGRAMMING — MID·TERM REPORT</div>
+  </div>
+
+  <header class="title-block">
+    <div class="eyebrow">Mid-term Examination · Class Distribution</div>
+    <span class="course-tag">COURSE / PYTHON PROGRAMMING</span>
+    <h1>중간고사 성적<br><span class="it">분포 분석</span></h1>
+    <div class="course-name">파이썬프로그래밍 · 2026학년도</div>
+    <p class="subtitle">총 31명 응시 · 30점 만점 기준. 익명화된 분포·구간별 인원·사분위 통계로 본인의 상대적 위치를 가늠할 수 있도록 구성했습니다. 개별 점수가 아닌 <em>분포의 모양</em>에 주목하세요.</p>
+  </header>
+
+  <!-- KPI -->
+  <section class="kpis" id="kpis"></section>
+
+  <!-- Section 01: Histogram -->
+  <div class="sec-head">
+    <span class="num">01</span>
+    <h2>구간별 분포</h2>
+    <span class="meta">5점 간격 · BINS = 6</span>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">점수 히스토그램</div>
+    <div class="chart-sub">FREQUENCY DISTRIBUTION · N = 31</div>
+    <div class="hist" id="hist">
+      <div class="y-axis" id="yaxis"></div>
+    </div>
+  </div>
+
+  <!-- Section 02: Box plot + Bands -->
+  <div class="sec-head">
+    <span class="num">02</span>
+    <h2>요약 통계 · 등급 구간</h2>
+    <span class="meta">QUARTILES & BANDS</span>
+  </div>
+  <div class="two-col">
+    <div class="box-card">
+      <div class="chart-title">상자그림 (Box Plot)</div>
+      <div class="chart-sub">Q1 — MEDIAN — Q3 · MIN/MAX</div>
+      <div class="boxplot" id="boxplot"></div>
+      <div class="quartiles" id="quartiles"></div>
+    </div>
+    <div class="grade-band">
+      <div class="chart-title">점수대별 인원</div>
+      <div class="chart-sub">SCORE BAND DISTRIBUTION</div>
+      <div id="bands" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <!-- Section 03: Strip plot -->
+  <div class="sec-head">
+    <span class="num">03</span>
+    <h2>전체 점수 분산</h2>
+    <span class="meta">EVERY STUDENT · ANONYMIZED</span>
+  </div>
+  <div class="strip-card">
+    <div class="chart-title">개별 점수 위치</div>
+    <div class="chart-sub">각 점은 한 명의 학생을 나타냅니다 — 본인 점수 위치를 확인하세요</div>
+    <div class="strip" id="strip">
+      <div class="strip-axis"></div>
+      <div class="tooltip" id="tt"></div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <span>SOURCE — 파이썬프로그래밍 중간고사</span>
+    <span>30 PTS · MAX</span>
+    <span>STUDENTS ANONYMIZED</span>
+  </div>
+</div>
+
+<script>
+// 데이터 (학번 익명화 — 점수만 사용)
+// 31명 · 30점 만점
+const scores = [22,13,21,15,15,24,23,11,14,23,17,15,9,14,16,23,10,12,9,11,8,21,10,8,21,9,18,26,15,27,19];
+const N = scores.length;
+const MAX = 30;
+
+// === KPI ===
+const sum = scores.reduce((a,b)=>a+b,0);
+const mean = sum/N;
+const sorted = [...scores].sort((a,b)=>a-b);
+const median = N%2 ? sorted[(N-1)/2] : (sorted[N/2-1]+sorted[N/2])/2;
+const variance = scores.reduce((a,b)=>a+(b-mean)**2,0)/N;
+const stdev = Math.sqrt(variance);
+const max = Math.max(...scores);
+const min = Math.min(...scores);
+
+const kpiData = [
+  {label:'응시 인원', value:N, unit:'명', sub:'TOTAL N'},
+  {label:'평균', value:mean.toFixed(2), unit:'/30', sub:'MEAN'},
+  {label:'중앙값', value:median, unit:'/30', sub:'MEDIAN'},
+  {label:'표준편차', value:stdev.toFixed(2), unit:'σ', sub:'STD DEV'},
+  {label:'최고점', value:max, unit:'/30', sub:'MAX SCORE'},
+];
+document.getElementById('kpis').innerHTML = kpiData.map(k=>`
+  <div class="kpi">
+    <div class="label">${k.label}</div>
+    <div>
+      <div class="value">${k.value}<span class="unit">${k.unit}</span></div>
+      <div class="sub" style="margin-top:6px">${k.sub}</div>
+    </div>
+  </div>
+`).join('');
+
+// === Histogram === (30점 만점 → 5점 간격 6구간)
+const bins = [
+  {range:'0–4',min:0,max:4,cls:'b1'},
+  {range:'5–9',min:5,max:9,cls:'b2'},
+  {range:'10–14',min:10,max:14,cls:'b3'},
+  {range:'15–19',min:15,max:19,cls:'b4'},
+  {range:'20–24',min:20,max:24,cls:'b5'},
+  {range:'25–30',min:25,max:30,cls:'b6'},
+];
+bins.forEach(b => b.count = scores.filter(s => s>=b.min && s<=b.max).length);
+const maxCount = Math.max(...bins.map(b=>b.count));
+
+const hist = document.getElementById('hist');
+const yaxis = document.getElementById('yaxis');
+yaxis.innerHTML = '';
+const ticks = 4;
+for(let i=ticks;i>=0;i--){
+  const v = Math.round(maxCount*i/ticks);
+  yaxis.innerHTML += `<div class="y-tick">${v}</div>`;
+}
+
+bins.forEach(b=>{
+  const h = (b.count/maxCount)*100;
+  hist.innerHTML += `
+    <div class="bar ${b.cls}" style="height:${h}%">
+      <div class="count">${b.count}</div>
+      <div class="lbl">${b.range}</div>
+    </div>`;
+});
+
+// === Box plot ===
+function quantile(arr,q){
+  const pos = (arr.length-1)*q;
+  const base = Math.floor(pos);
+  const rest = pos-base;
+  return arr[base+1]!==undefined ? arr[base]+rest*(arr[base+1]-arr[base]) : arr[base];
+}
+const q1 = quantile(sorted,0.25);
+const q3 = quantile(sorted,0.75);
+const iqr = q3-q1;
+const lowerFence = q1 - 1.5*iqr;
+const upperFence = q3 + 1.5*iqr;
+
+const bp = document.getElementById('boxplot');
+const W = 100;
+const sx = v => (v/MAX)*W;
+
+let html = '<div class="axis"></div>';
+for(let v=0;v<=30;v+=5){
+  html += `<div class="tick" style="left:${sx(v)}%"><span class="tlbl">${v}</span></div>`;
+}
+html += `<div class="whisker" style="left:${sx(min)}%;width:${sx(q1)-sx(min)}%"></div>`;
+html += `<div class="whisker" style="left:${sx(q3)}%;width:${sx(max)-sx(q3)}%"></div>`;
+html += `<div class="cap" style="left:${sx(min)}%"></div>`;
+html += `<div class="cap" style="left:${sx(max)}%"></div>`;
+html += `<div class="box" style="left:${sx(q1)}%;width:${sx(q3)-sx(q1)}%"></div>`;
+html += `<div class="median" style="left:${sx(median)}%"></div>`;
+scores.forEach(s=>{
+  if(s<lowerFence||s>upperFence){
+    html += `<div class="dot outlier" style="left:${sx(s)}%" title="이상치 ${s}점"></div>`;
+  }
+});
+bp.innerHTML = html;
+
+const qData = [
+  {l:'최솟값', v:min},
+  {l:'Q1 (25%)', v:q1},
+  {l:'Q3 (75%)', v:q3},
+  {l:'최댓값', v:max},
+];
+document.getElementById('quartiles').innerHTML = qData.map(q=>`
+  <div class="q">
+    <div class="qlabel">${q.l}</div>
+    <div class="qval">${q.v}</div>
+  </div>
+`).join('');
+
+// === Bands === (30점 만점 기준)
+const bands = [
+  {name:'상위권', range:'24 – 30점', min:24, max:30, color:'#1d3557'},
+  {name:'중상위권', range:'18 – 23점', min:18, max:23, color:'#5a8a5a'},
+  {name:'중위권', range:'12 – 17점', min:12, max:17, color:'#a88c4a'},
+  {name:'중하위권', range:'6 – 11점', min:6, max:11, color:'#c66b3a'},
+  {name:'하위권', range:'0 – 5점', min:0, max:5, color:'#a23a2a'},
+];
+bands.forEach(b => b.count = scores.filter(s => s>=b.min && s<=b.max).length);
+document.getElementById('bands').innerHTML = bands.map(b=>{
+  const pct = ((b.count/N)*100).toFixed(1);
+  return `
+    <div class="band-row">
+      <div class="swatch" style="background:${b.color}"></div>
+      <div class="band-info">
+        <div class="bname">${b.name}</div>
+        <div class="brange">${b.range}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="band-count">${b.count}<span style="font-size:14px;color:var(--muted);font-weight:400">명</span></div>
+        <div class="band-pct">${pct}%</div>
+      </div>
+    </div>
+  `;
+}).join('');
+
+// === Strip plot ===
+const strip = document.getElementById('strip');
+const tt = document.getElementById('tt');
+for(let v=0;v<=30;v+=5){
+  const tk = document.createElement('div');
+  tk.className='strip-tick';
+  tk.style.left = `${(v/MAX)*100}%`;
+  tk.innerHTML = `<span class="stl">${v}</span>`;
+  strip.appendChild(tk);
+}
+function bandColor(s){
+  for(const b of bands) if(s>=b.min&&s<=b.max) return b.color;
+  return '#888';
+}
+const counts = {};
+scores.forEach((s,i)=>{
+  counts[s] = (counts[s]||0)+1;
+  const stack = counts[s]-1;
+  const dot = document.createElement('div');
+  dot.className='student';
+  dot.style.left = `calc(${(s/MAX)*100}% - 7px)`;
+  dot.style.top = `${70 - 7 - stack*16}px`;
+  dot.style.background = bandColor(s);
+  dot.dataset.score = s;
+  dot.addEventListener('mouseenter',e=>{
+    const r = strip.getBoundingClientRect();
+    const dr = dot.getBoundingClientRect();
+    tt.style.left = (dr.left - r.left + 7) + 'px';
+    tt.style.top = (dr.top - r.top) + 'px';
+    tt.textContent = `${s}점 / 30점`;
+    tt.classList.add('show');
+  });
+  dot.addEventListener('mouseleave',()=>tt.classList.remove('show'));
+  strip.appendChild(dot);
+});
+</script>
+</body>
+</html>
