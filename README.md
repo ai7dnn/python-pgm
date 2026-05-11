@@ -14,7 +14,7 @@
 - 범위: 1장 ~ 6장
 - 교재의 '학습내용점검'과 '도전! 프로그래밍'에서 주로 출제 예정
 - 게시된 24년 기출문제 유형으로 출제 예정
-- [중간성적 분포](https://ai7dnn.github.io/python-pgm/mid-score.html)
+- [파이썬프로그래밍 중간고사 성적 분석](https://ai7dnn.github.io/python-pgm/mid-score.html)
 
 ## 쉘에서 줄 또는 선택블록 실행: shift + enter 설정 방법
 ### 설정 단축키: ctrl + ,
