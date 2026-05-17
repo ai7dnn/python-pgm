@@ -3,8 +3,11 @@
 
 ## 교재
 - [최신파이썬완전정복](https://product.kyobobook.co.kr/detail/S000214958974)
-  -  강환수 외 공저 / 도서출판 홍릉
+  - 강환수 외 공저 / 도서출판 홍릉
   - 수업에 반드시 준비해 주시기 바랍니다. 
+
+> <img width="403" height="556" alt="image" src="https://github.com/user-attachments/assets/510f2f51-ec19-4419-973e-bc88cbc44e8c" />
+
 
 ## 수업 계획
 > 
